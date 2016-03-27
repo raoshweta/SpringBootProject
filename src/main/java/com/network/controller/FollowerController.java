@@ -12,6 +12,7 @@ import com.network.dao.FollowDao;
 import com.network.dao.UserDao;
 import com.network.handler.FollowerHandler;
 import com.network.model.FollowModel;
+import com.network.model.RequestWrapper;
 
 @Controller
 public class FollowerController {
@@ -28,13 +29,13 @@ public class FollowerController {
 	 * @param FollowModel
 	 * @return A string describing if the user can follow other user
 	 *         successfully
-	 * @throws DatabaseException 
+	 * @throws DatabaseException
 	 */
 
 	@RequestMapping(value = "/followProfile", method = RequestMethod.POST)
 	@ResponseBody
-	public String followProfile(@RequestBody FollowModel followModel) throws DatabaseException {
-
+	public RequestWrapper<String> followProfile(
+			@RequestBody FollowModel followModel) throws DatabaseException {
 		return followerHandler.followProfile(followModel);
 	}
 
@@ -44,12 +45,13 @@ public class FollowerController {
 	 * @param FollowModel
 	 * @return A string describing if the user unfollowed other user
 	 *         successfully
-	 * @throws DatabaseException 
+	 * @throws DatabaseException
 	 */
 
 	@RequestMapping(value = "/unfollowProfile", method = RequestMethod.POST)
 	@ResponseBody
-	public String unfollowProfile(@RequestBody FollowModel followModel) throws DatabaseException {
+	public RequestWrapper<String> unfollowProfile(
+			@RequestBody FollowModel followModel) throws DatabaseException {
 		return followerHandler.unfollowProfile(followModel);
 	}
 

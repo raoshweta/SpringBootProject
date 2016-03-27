@@ -37,7 +37,7 @@ public class UserController {
 
 	@RequestMapping(value = "/saveUser", method = RequestMethod.POST)
 	@ResponseBody
-	public String create(@RequestBody User user) throws DatabaseException {
+	public RequestWrapper<String> create(@RequestBody User user) throws DatabaseException {
 		return userHandler.saveUserDetails(user);
 	}
 
@@ -51,7 +51,7 @@ public class UserController {
 	 */
 	@RequestMapping("/searchByName")
 	@ResponseBody
-	public String searchByName(@RequestBody String name) throws DatabaseException {
+	public RequestWrapper<String> searchByName(@RequestBody String name) throws DatabaseException {
 		return userHandler.searchByName(name);
 	}
 
@@ -79,7 +79,7 @@ public class UserController {
 	 */
 	@RequestMapping("/getMyProfile")
 	@ResponseBody
-	public MyprofileModel getUserProfile(@RequestBody String name) throws DatabaseException {
+	public RequestWrapper<MyprofileModel> getUserProfile(@RequestBody String name) throws DatabaseException {
 		return userHandler.getMyProfile(name);
 	}
 

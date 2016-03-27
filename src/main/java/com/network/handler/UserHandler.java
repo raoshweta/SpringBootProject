@@ -15,10 +15,10 @@ import com.network.model.UserProfileModel;
  */
 public interface UserHandler {
 
-	String saveUserDetails(User user) throws DatabaseException;
-	String searchByName(String name) throws DatabaseException;
+	RequestWrapper<String> saveUserDetails(User user) throws DatabaseException;
+	RequestWrapper<String> searchByName(String name) throws DatabaseException;
 
 	RequestWrapper<UserProfileModel> getUserProfile(FollowModel followModel) throws DatabaseException;
-	MyprofileModel getMyProfile(@RequestBody String name) throws DatabaseException;
+	RequestWrapper<MyprofileModel> getMyProfile(@RequestBody String name) throws DatabaseException;
 
 }

@@ -1,7 +1,6 @@
 package com.network.handler.Impl;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -43,20 +42,23 @@ public class UserHandlerImpl implements UserHandler {
 	 * @return A string describing if the user is successfully created or not.
 	 * @throws DatabaseException
 	 */
-	public String saveUserDetails(User user) throws DatabaseException {
+	public RequestWrapper<String> saveUserDetails(User user)
+			throws DatabaseException {
 
+		RequestWrapper<String> requestWrapper = new RequestWrapper<String>();
 		String result = null;
 		Validation validation = new Validation();
-		RequestWrapper<String> RequestWrapper;
 
 		if ((user.getName() == null || user.getGender() == null
 				|| user.getBirthday() == null || user.getEmailId() == null
 				|| user.getMobilePhone() == null || user.getPassword() == null)) {
 
-			
-			
-			
-			return result = "Invalid user parameters, missing parameters";
+			requestWrapper
+					.setData("Invalid user parameters, missing parameters");
+			requestWrapper.setResponseMessage("Bad Request");
+			requestWrapper.setCodeStatus(Constants.NULL);
+			return requestWrapper;
+
 		}
 
 		if ((user.getName().equals("") || user.getGender().equals("")
@@ -65,7 +67,10 @@ public class UserHandlerImpl implements UserHandler {
 				|| user.getMobilePhone().equals("") || user.getPassword()
 				.equals(""))) {
 
-			return result = "Invalid user parameters, all fields are mandatory";
+			requestWrapper.setData("Invalid user parameters");
+			requestWrapper.setResponseMessage("Bad Request");
+			requestWrapper.setCodeStatus(Constants.NULL);
+			return requestWrapper;
 		}
 
 		Boolean mobilevalidation = validation.validatePhoneNumber(user
@@ -73,7 +78,10 @@ public class UserHandlerImpl implements UserHandler {
 
 		if ((mobilevalidation = false) || user.getMobilePhone().equals("0")) {
 
-			return result = "Invalid Mobile number, enter valid mobile numer";
+			requestWrapper.setData("Invalid phone number");
+			requestWrapper.setResponseMessage("Bad Request");
+			requestWrapper.setCodeStatus(Constants.NULL);
+			return requestWrapper;
 		}
 
 		User userObj = new User();
@@ -85,7 +93,10 @@ public class UserHandlerImpl implements UserHandler {
 		} else if (userObj != null) {
 			result = "User already exists with name " + user.getName();
 		}
-		return result;
+		requestWrapper.setData(result);
+		requestWrapper.setResponseMessage("Success");
+		requestWrapper.setCodeStatus(Constants.SUCCESS);
+		return requestWrapper;
 	}
 
 	/**
@@ -97,15 +108,25 @@ public class UserHandlerImpl implements UserHandler {
 	 * @throws DatabaseException
 	 */
 
-	public String searchByName(String name) throws DatabaseException {
+	public RequestWrapper<String> searchByName(String name)
+			throws DatabaseException {
+		RequestWrapper<String> requestWrapper = new RequestWrapper<String>();
 		User user = new User();
 		user = userDao.findByname(name);
 
 		if (user == null) {
-			return "User not found with name, invalid parameters " + name;
+
+			requestWrapper
+					.setData("User not found with name, invalid parameters");
+			requestWrapper.setResponseMessage("Bad Request");
+			requestWrapper.setCodeStatus(Constants.NULL);
+			return requestWrapper;
 		}
 
-		return user.getName();
+		requestWrapper.setData(user.getName());
+		requestWrapper.setResponseMessage("Success");
+		requestWrapper.setCodeStatus(Constants.SUCCESS);
+		return requestWrapper;
 	}
 
 	/**
@@ -116,29 +137,30 @@ public class UserHandlerImpl implements UserHandler {
 	 * @return UserProfileModel
 	 * @throws DatabaseException
 	 */
-	public RequestWrapper<UserProfileModel> getUserProfile(FollowModel followModel)
-			throws DatabaseException {
+	public RequestWrapper<UserProfileModel> getUserProfile(
+			FollowModel followModel) throws DatabaseException {
 
 		User user;
 		User follow;
-		RequestWrapper<UserProfileModel> requestWrapper= new RequestWrapper<UserProfileModel>() ;
+		RequestWrapper<UserProfileModel> requestWrapper = new RequestWrapper<UserProfileModel>();
 		ArrayList<Post> post = new ArrayList<Post>();
 		ArrayList<String> userPosts = new ArrayList<String>();
 		int i;
-		
+
 		UserProfileModel userProfileModel = new UserProfileModel();
 		if (followModel.getFollowerName() == null
 				|| followModel.getUserName() == null) {
-			requestWrapper.setData(userProfileModel);
-			requestWrapper.setResponseMessage("few parameters are null");
+			requestWrapper.setData("few parameters are null");
+			requestWrapper.setResponseMessage("Bad Request");
 			requestWrapper.setCodeStatus(Constants.NULL);
 			return requestWrapper;
 		}
-		
+
 		if ((followModel.getFollowerName().equals("") || followModel
 				.getFollowerName().equals(""))) {
 			requestWrapper.setData(userProfileModel);
-			requestWrapper.setResponseMessage("few parameters are null");
+			requestWrapper
+					.setResponseMessage("Bad Request,few parameters are null");
 			requestWrapper.setCodeStatus(Constants.NULL);
 			return requestWrapper;
 		}
@@ -163,27 +185,29 @@ public class UserHandlerImpl implements UserHandler {
 				.getFollowerid());
 
 		for (i = 0; i <= follower.size() - 1; i++) {
-			
+
 			if (follower.get(i).getUser().getName()
 					.equals(followModel.getUserName())) {
 				userProfileModel.setFollow(true);
-			}else {
+			} else {
 				userProfileModel.setFollow(false);
 			}
-			
+
 		}
 
 		requestWrapper.setData(userProfileModel);
-		requestWrapper.setResponseMessage("success");
+		requestWrapper.setResponseMessage("Success");
 		requestWrapper.setCodeStatus(Constants.SUCCESS);
 		return requestWrapper;
 	}
 
-	public MyprofileModel getMyProfile(String name) throws DatabaseException {
+	public RequestWrapper<MyprofileModel> getMyProfile(String name)
+			throws DatabaseException {
 
 		MyprofileModel myprofileModel = new MyprofileModel();
 		User user;
 		int i;
+		RequestWrapper<MyprofileModel> requestWrapper = new RequestWrapper<MyprofileModel>();
 		ArrayList<Post> post = new ArrayList<Post>();
 		ArrayList<String> userPosts = new ArrayList<String>();
 		ArrayList<String> followers = new ArrayList<String>();
@@ -193,16 +217,20 @@ public class UserHandlerImpl implements UserHandler {
 		post = postDao.findByuser(user);
 
 		if (user == null || post == null) {
-			return myprofileModel;
+
+			requestWrapper.setData("Invalid Request, few parameters are null");
+			requestWrapper.setResponseMessage("Bad Request");
+			requestWrapper.setCodeStatus(Constants.NULL);
+			return requestWrapper;
 		}
 
-		for ( i = 0; i <= post.size() - 1; i++) {
+		for (i = 0; i <= post.size() - 1; i++) {
 			userPosts.add(post.get(i).getPost());
 		}
 
 		followerList = followDao.findByfollowerid(user.getFollowers().get(0)
 				.getFollowerid());
-		for ( i = 0; i <= followerList.size() - 1; i++) {
+		for (i = 0; i <= followerList.size() - 1; i++) {
 			followers.add(followerList.get(i).getUser().getName());
 		}
 
@@ -216,7 +244,11 @@ public class UserHandlerImpl implements UserHandler {
 
 		myprofileModel.setFollow(followers);
 
-		return myprofileModel;
+		requestWrapper.setData(myprofileModel);
+		requestWrapper.setResponseMessage("Success");
+		requestWrapper.setCodeStatus(Constants.SUCCESS);
+		return requestWrapper;
+
 	}
 
 }

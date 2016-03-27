@@ -13,6 +13,7 @@ import com.network.dao.UserDao;
 import com.network.dao.entity.User;
 import com.network.handler.PostsHandler;
 import com.network.model.PostModel;
+import com.network.model.RequestWrapper;
 
 @Controller
 public class PostsController {
@@ -25,16 +26,14 @@ public class PostsController {
 	 * 
 	 * @param PostModel
 	 * @return A string describing if the post is successfully saved or not.
-	 * @throws DatabaseException 
+	 * @throws DatabaseException
 	 */
 
 	@RequestMapping(value = "/savePost", method = RequestMethod.POST)
 	@ResponseBody
-	public String savePost(@RequestBody PostModel postModel) throws DatabaseException {
-
-		String result = postsHandler.savePost(postModel);
-		return result;
-
+	public RequestWrapper<String> savePost(@RequestBody PostModel postModel)
+			throws DatabaseException {
+		return postsHandler.savePost(postModel);
 	}
 
 	/**
@@ -46,8 +45,8 @@ public class PostsController {
 	 */
 	@RequestMapping(value = "/deletePost", method = RequestMethod.POST)
 	@ResponseBody
-	public String deletePost(@RequestBody String username) throws DatabaseException {
-
+	public RequestWrapper<String> deletePost(@RequestBody String username)
+			throws DatabaseException {
 		return postsHandler.deletePost(username);
 
 	}
